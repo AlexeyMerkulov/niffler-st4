@@ -31,9 +31,7 @@ public class CategoryExtension implements BeforeEachCallback {
                         .filter(x -> categoryData.category().equals(x.category()))
                         .findFirst();
             }
-            existedCategoryJson.ifPresent(categoryJson -> extensionContext
-                    .getStore(SpendExtension.NAMESPACE)
-                    .put("category", categoryJson));
+            existedCategoryJson.ifPresent(categoryJson -> saveCategoryJsonToStore(extensionContext, categoryJson));
             if (existedCategoryJson.isEmpty()) {
                 CategoryJson categoryJson = new CategoryJson(
                         null,
@@ -41,9 +39,13 @@ public class CategoryExtension implements BeforeEachCallback {
                         categoryData.username()
                 );
                 CategoryJson created = categoryApi.addCategory(categoryJson).execute().body();
-                extensionContext.getStore(SpendExtension.NAMESPACE)
-                        .put("category", created);
+                saveCategoryJsonToStore(extensionContext, created);
             }
         }
+    }
+
+    private void saveCategoryJsonToStore(ExtensionContext extensionContext, CategoryJson categoryJson) {
+        extensionContext.getStore(SpendExtension.NAMESPACE)
+                .put("category", categoryJson);
     }
 }
